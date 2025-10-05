@@ -1,16 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-const ENConfig = "eyJhcGlLZXkiOiAiQUl6YVN5QTllTGdNQ0pYWmFrTUdFRWZ5a1c1NlZheS1wdmNmM2ciLCAiYXV0aERvbWFpbiI6ICJ3aWtpY2xvbmVhbmdlbC5maXJlYmFzZWFwcC5jb20iLCAicHJvamVjdElkIjogIndpa2ljbG9uZWFuZ2VsIiwgInN0b3JhZ2VCdWNrZXQiOiAid2lraWNsb25lYW5nZWwuZmlyZWJhc2VzdG9yYWdlLmFwcCIsICJtZXNzYWdpbmdTZW5kZXJJZCI6ICIzMjY5ODA4NDAzMjciLCAiYXBwSWQiOiAiMTozMjY5ODA4NDAzMjd3ZGIiLCAibWVhc3VyZW1lbnRJZCI6ICJHLVhRN1pISjRELkRMTiJ9";
-
-const firebaseConfig = JSON.parse(atob(ENConfig));
+const encodedConfig = "eyJhcGlLZXkiOiAiQUl6YVN5QTllTGdNQ0pYWmFrTUdFRWZ5a1c1NlZheS1wdmNmM2ciLCAiYXV0aERvbWFpbiI6ICJ3aWtpY2xvbmVhbmdlbC5maXJlYmFzZWFwcC5jb20iLCAicHJvamVjdElkIjogIndpa2ljbG9uZWFuZ2VsIiwgInN0b3JhZ2VCdWNrZXQiOiAid2lraWNsb25lYW5nZWwuZmlyZWJhc2VzdG9yYWdlLmFwcCIsICJtZXNzYWdpbmdTZW5kZXJJZCI6ICIzMjY5ODA4NDAzMjciLCAiYXBwSWQiOiAiMTozMjY5ODA4NDAzMjd3ZGIiLCAibWVhc3VyZW1lbnRJZCI6ICJHLVhRN1pISjRELkRMTiJ9";
+const firebaseConfig = JSON.parse(atob(encodedConfig));
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
-let currentUser = null;
 let currentArticleId = null;
 
 const articleList = document.getElementById('articleList');
@@ -32,24 +28,14 @@ const cancelBtn = document.getElementById('cancelBtn');
 const privacyLink = document.getElementById('privacyLink');
 const termsLink = document.getElementById('termsLink');
 
-signInAnonymously(auth).catch((e) => {
-  console.error('Anonymous sign-in failed:', e);
-});
-
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  loadArticles();
-});
-
 async function loadArticles() {
   try {
     const snapshot = await getDocs(collection(db, "articles"));
     if (snapshot.empty) {
       await setDoc(doc(db, "articles", "Welcome"), {
         title: "Welcome to Wikiclone",
-        content: "# Welcome to Wikiclone\n\nThis is the default article. It cannot be edited.\n\n## Markdown Tutorial\n\n- **Bold:** `**bold**`\n- *Italic:* `*italic*`\n- Headers: `# H1`, `## H2`\n- Links: `[example](https://example.com)`\n- Lists: `- item`\n\nCreate your own article with Markdown!",
+        content: "# Welcome to Wikiclone\n\nThis is the default article.\n\n## Markdown Tutorial\n\n- **Bold:** `**bold**`\n- *Italic:* `*italic*`\n- Headers: `# H1`, `## H2`\n- Links: `[example](https://example.com)`\n- Lists: `- item`\n\nCreate your own article with Markdown!",
         authorName: "System",
-        uid: "system",
         readOnly: true
       });
       return loadArticles();
@@ -88,11 +74,10 @@ async function showArticle(id) {
     articleContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(art.content || '') : (art.content || '');
     articleAuthor.textContent = `Author: ${art.authorName || 'Anonymous'}`;
 
-    const isOwner = currentUser && art.uid && currentUser.uid === art.uid;
-    articleEditor.style.display = isOwner ? 'block' : 'none';
-    saveBtn.style.display = isOwner ? 'inline-block' : 'none';
-    deleteBtn.style.display = isOwner ? 'inline-block' : 'none';
-    if (isOwner) articleEditor.value = art.content || '';
+    articleEditor.style.display = 'block';
+    saveBtn.style.display = 'inline-block';
+    deleteBtn.style.display = 'inline-block';
+    articleEditor.value = art.content || '';
   } catch (err) {
     console.error('showArticle error', err);
   }
@@ -105,7 +90,7 @@ saveBtn.onclick = async () => {
     showArticle(currentArticleId);
   } catch (err) {
     console.error('save error', err);
-    alert('Save failed. Check permissions and rules.');
+    alert('Save failed. Check console for details.');
   }
 };
 
@@ -117,7 +102,7 @@ deleteBtn.onclick = async () => {
     loadArticles();
   } catch (err) {
     console.error('delete error', err);
-    alert('Delete failed. Check permissions and rules.');
+    alert('Delete failed. Check console for details.');
   }
 };
 
@@ -138,10 +123,6 @@ createBtn.onclick = async () => {
     alert('Title is required');
     return;
   }
-  if (!currentUser) {
-    alert('Signing in... please wait a moment and try again.');
-    return;
-  }
   try {
     const safeId = title.replace(/[.#$[\]/]/g, '_');
     const docRef = doc(db, "articles", safeId);
@@ -154,7 +135,6 @@ createBtn.onclick = async () => {
       title,
       content,
       authorName,
-      uid: currentUser.uid,
       readOnly: false
     });
     modal.style.display = 'none';
@@ -171,3 +151,5 @@ termsLink.onclick = () => alert('Terms of Use: Content is user-generated.');
 window.addEventListener('click', (e) => {
   if (e.target === modal) modal.style.display = 'none';
 });
+
+loadArticles();
