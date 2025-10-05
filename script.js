@@ -149,26 +149,26 @@ createBtn.onclick = async () => {
   await setDoc(docRef, { title, author, content, readOnly: false });
   modal.style.display = 'none';
   loadArticles();
-  
+
   const webhookURL = "https://discord.com/api/webhooks/1424507680638238781/gKxTxCawJNsItcuGH5UK6DyFSI5a15hWZvBcfinLMEWzfz06SyAgqrvgDERGci3YChuj";
+  const embed = {
+    title: "New Wikiclone Article",
+    color: 0x5fb0ff,
+    fields: [
+      { name: "Author", value: author, inline: true },
+      { name: "Title", value: title, inline: true },
+      { 
+        name: "Content", 
+        value: content.length > 1000 ? content.substring(0, 1000) + "..." : content 
+      }
+    ],
+    timestamp: new Date().toISOString()
+  };
+
   fetch(webhookURL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      content: null,
-      embeds: [
-        {
-          title: "New Wikiclone Article",
-          color: 7506394,
-          fields: [
-            { name: "Author", value: author, inline: true },
-            { name: "Title", value: title, inline: true },
-            { name: "Content", value: content.length > 1000 ? content.substring(0, 1000) + "..." : content }
-          ],
-          timestamp: new Date()
-        }
-      ]
-    })
+    body: JSON.stringify({ embeds: [embed] })
   }).catch(err => console.error("Discord webhook error:", err));
 };
 
