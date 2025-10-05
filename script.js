@@ -71,10 +71,10 @@ function displayArticles(articleArray){
   if(articleArray.length > 0) showArticle(articleArray[0].id);
 }
 
-async function showArticle(id){
+async function showArticle(id) {
   try {
     const artDoc = await getDoc(doc(db, "articles", id));
-    if(!artDoc.exists()) return;
+    if (!artDoc.exists()) return;
 
     const art = artDoc.data();
     currentArticleId = id;
@@ -83,17 +83,18 @@ async function showArticle(id){
     articleContent.innerHTML = marked.parse(art.content);
     articleAuthor.textContent = `Author: ${art.author}`;
 
-    if(!art.readOnly){
-      articleEditor.style.display='block';
-      saveBtn.style.display='inline-block';
-      deleteBtn.style.display='inline-block';
+    const enteredAuthor = authorInput.value.trim();
+    if (!art.readOnly && enteredAuthor === art.author) {
+      articleEditor.style.display = 'block';
+      saveBtn.style.display = 'inline-block';
+      deleteBtn.style.display = 'inline-block';
       articleEditor.value = art.content;
     } else {
-      articleEditor.style.display='none';
-      saveBtn.style.display='none';
-      deleteBtn.style.display='none';
+      articleEditor.style.display = 'none';
+      saveBtn.style.display = 'none';
+      deleteBtn.style.display = 'none';
     }
-  } catch(err){
+  } catch (err) {
     console.error("Error showing article:", err);
   }
 }
@@ -129,29 +130,47 @@ newArticleBtn.onclick = ()=>{
 
 cancelBtn.onclick = ()=>{ modal.style.display='none'; }
 
-createBtn.onclick = async ()=>{
+createBtn.onclick = async () => {
   const author = authorInput.value.trim();
   const title = titleInput.value.trim();
   const content = contentInput.value.trim();
-  if(!author || !title){
+  if (!author || !title) {
     alert('Author and Title are required!');
     return;
   }
 
-  try {
-    const docSnap = await getDoc(doc(db, "articles", title));
-    if(docSnap.exists()){
-      alert('Article already exists!');
-      return;
-    }
-
-    await setDoc(doc(db, "articles", title), { title, author, content, readOnly:false });
-    modal.style.display='none';
-    loadArticles();
-  } catch(err){
-    console.error("Error creating article:", err);
+  const docRef = doc(db, "articles", title);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    alert('Article already exists!');
+    return;
   }
-}
+
+  await setDoc(docRef, { title, author, content, readOnly: false });
+  modal.style.display = 'none';
+  loadArticles();
+  
+  const webhookURL = "https://discord.com/api/webhooks/1424507680638238781/gKxTxCawJNsItcuGH5UK6DyFSI5a15hWZvBcfinLMEWzfz06SyAgqrvgDERGci3YChuj";
+  fetch(webhookURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      content: null,
+      embeds: [
+        {
+          title: "New Wikiclone Article",
+          color: 7506394,
+          fields: [
+            { name: "Author", value: author, inline: true },
+            { name: "Title", value: title, inline: true },
+            { name: "Content", value: content.length > 1000 ? content.substring(0, 1000) + "..." : content }
+          ],
+          timestamp: new Date()
+        }
+      ]
+    })
+  }).catch(err => console.error("Discord webhook error:", err));
+};
 
 privacyLink.onclick = ()=>{ alert("Privacy Policy:\nAll articles are stored online in Firebase."); }
 termsLink.onclick = ()=>{ alert("Terms of Use:\nContent is user-generated. Admin not responsible."); }
