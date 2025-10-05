@@ -2,8 +2,6 @@ import { db } from './firebase-config.js';
 
 import { collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-import { marked } from 'https://cdn.jsdelivr.net/npm/marked@5.2.12/marked.esm.js';
-
 const articleList = document.getElementById('articleList');
 const articleTitle = document.getElementById('articleTitle');
 const articleContent = document.getElementById('articleContent');
