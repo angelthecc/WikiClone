@@ -1,8 +1,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-const encodedConfig = "eyJhcGlLZXkiOiAiQUl6YVN5QTllTGdNQ0pYWmFrTUdFRWZ5a1c1NlZheS1wdmNmM2ciLCAiYXV0aERvbWFpbiI6ICJ3aWtpY2xvbmVhbmdlbC5maXJlYmFzZWFwcC5jb20iLCAicHJvamVjdElkIjogIndpa2ljbG9uZWFuZ2VsIiwgInN0b3JhZ2VCdWNrZXQiOiAid2lraWNsb25lYW5nZWwuZmlyZWJhc2VzdG9yYWdlLmFwcCIsICJtZXNzYWdpbmdTZW5kZXJJZCI6ICIzMjY5ODA4NDAzMjciLCAiYXBwSWQiOiAiMTozMjY5ODA4NDAzMjd3ZGIiLCAibWVhc3VyZW1lbnRJZCI6ICJHLVhRN1pISjRELkRMTiJ9";
-const firebaseConfig = JSON.parse(atob(encodedConfig));
+const firebaseConfig = {
+  apiKey: "AIzaSyA9eLg5CJXzakMGEUfykW25Vay-pvcf2gQ",
+  authDomain: "wikicloneangel.firebaseapp.com",
+  projectId: "wikicloneangel",
+  storageBucket: "wikicloneangel.firebasestorage.app",
+  messagingSenderId: "326980840327",
+  appId: "1:326980840327:web:7b8cf54747be1adc1f8122",
+  measurementId: "G-XQ7ZHJ4DLN"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -12,14 +19,12 @@ let currentArticleId = null;
 const articleList = document.getElementById('articleList');
 const articleTitle = document.getElementById('articleTitle');
 const articleContent = document.getElementById('articleContent');
-const articleAuthor = document.getElementById('articleAuthor');
 const articleEditor = document.getElementById('articleEditor');
 const saveBtn = document.getElementById('saveBtn');
 const deleteBtn = document.getElementById('deleteBtn');
 
 const newArticleBtn = document.getElementById('newArticleBtn');
 const modal = document.getElementById('modal');
-const authorInput = document.getElementById('authorInput');
 const titleInput = document.getElementById('titleInput');
 const contentInput = document.getElementById('contentInput');
 const createBtn = document.getElementById('createBtn');
@@ -34,18 +39,16 @@ async function loadArticles() {
     if (snapshot.empty) {
       await setDoc(doc(db, "articles", "Welcome"), {
         title: "Welcome to Wikiclone",
-        content: "# Welcome to Wikiclone\n\nThis is the default article.\n\n## Markdown Tutorial\n\n- **Bold:** `**bold**`\n- *Italic:* `*italic*`\n- Headers: `# H1`, `## H2`\n- Links: `[example](https://example.com)`\n- Lists: `- item`\n\nCreate your own article with Markdown!",
+        content: "# Welcome to Wikiclone\n\nThis is the default article.\n\n## Markdown Tutorial\n- **Bold:** `**bold**`\n- *Italic:* `*italic*`\n- Headers: `# H1`, `## H2`\n- Links: `[example](https://example.com)`\n- Lists: `- item`",
         authorName: "System",
         readOnly: true
       });
       return loadArticles();
     }
-
     const articles = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     displayArticles(articles);
   } catch (err) {
     console.error('loadArticles error', err);
-    alert('Could not load articles. Check console for details.');
   }
 }
 
@@ -72,7 +75,6 @@ async function showArticle(id) {
 
     articleTitle.textContent = art.title;
     articleContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(art.content || '') : (art.content || '');
-    articleAuthor.textContent = `Author: ${art.authorName || 'Anonymous'}`;
 
     articleEditor.style.display = 'block';
     saveBtn.style.display = 'inline-block';
@@ -90,7 +92,6 @@ saveBtn.onclick = async () => {
     showArticle(currentArticleId);
   } catch (err) {
     console.error('save error', err);
-    alert('Save failed. Check console for details.');
   }
 };
 
@@ -102,12 +103,10 @@ deleteBtn.onclick = async () => {
     loadArticles();
   } catch (err) {
     console.error('delete error', err);
-    alert('Delete failed. Check console for details.');
   }
 };
 
 newArticleBtn.onclick = () => {
-  authorInput.value = '';
   titleInput.value = '';
   contentInput.value = '';
   modal.style.display = 'flex';
@@ -118,7 +117,6 @@ cancelBtn.onclick = () => (modal.style.display = 'none');
 createBtn.onclick = async () => {
   const title = (titleInput.value || '').trim();
   const content = (contentInput.value || '').trim();
-  const authorName = (authorInput.value || '').trim() || 'Anonymous';
   if (!title) {
     alert('Title is required');
     return;
@@ -131,17 +129,11 @@ createBtn.onclick = async () => {
       alert('Article with this title already exists.');
       return;
     }
-    await setDoc(docRef, {
-      title,
-      content,
-      authorName,
-      readOnly: false
-    });
+    await setDoc(docRef, { title, content, authorName: 'Anonymous', readOnly: false });
     modal.style.display = 'none';
     loadArticles();
   } catch (err) {
     console.error('create error', err);
-    alert('Create failed. Check console for details.');
   }
 };
 
