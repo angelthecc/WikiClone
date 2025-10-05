@@ -2,12 +2,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebas
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyA9eLg5CJXzakMGEUfykW25Vay-pvcf2gQ",
+  authDomain: "wikicloneangel.firebaseapp.com",
+  projectId: "wikicloneangel",
+  storageBucket: "wikicloneangel.firebasestorage.app",
+  messagingSenderId: "326980840327",
+  appId: "1:326980840327:web:7b8cf54747be1adc1f8122",
+  measurementId: "G-XQ7ZHJ4DLN"
 };
 
 const app = initializeApp(firebaseConfig);
