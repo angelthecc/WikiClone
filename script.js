@@ -149,27 +149,6 @@ createBtn.onclick = async () => {
   await setDoc(docRef, { title, author, content, readOnly: false });
   modal.style.display = 'none';
   loadArticles();
-
-  const webhookURL = "https://discord.com/api/webhooks/1424509140700499968/qt7R8Savw25-9VIM6ltNojyjzaejpQftIIbate81cO4ytwVf6idxItWQYhLZqPVnCquo";
-  const embed = {
-    title: "New Wikiclone Article",
-    color: 0x5fb0ff,
-    fields: [
-      { name: "Author", value: author, inline: true },
-      { name: "Title", value: title, inline: true },
-      { 
-        name: "Content", 
-        value: content.length > 1000 ? content.substring(0, 1000) + "..." : content 
-      }
-    ],
-    timestamp: new Date().toISOString()
-  };
-
-  fetch(webhookURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ embeds: [embed] })
-  }).catch(err => console.error("Discord webhook error:", err));
 };
 
 privacyLink.onclick = ()=>{ alert("Privacy Policy:\nAll articles are stored online in Firebase."); }
