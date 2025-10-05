@@ -1,33 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WikiClone</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wikiclone</title>
   <link rel="stylesheet" href="style.css" />
-  <script type="module" src="script.js" defer></script>
 </head>
 <body>
   <header>
-    <h1>WikiClone</h1>
-    <button id="new-article">New Article</button>
+    <h1>Wikiclone</h1>
+    <div class="header-links">
+      <a href="#" id="privacyLink">Privacy Policy</a>
+      <a href="#" id="termsLink">Terms of Use</a>
+      <button id="newArticleBtn">+ New Article</button>
+    </div>
   </header>
 
   <main>
-    <aside id="article-list"></aside>
-    <section id="article-view">
-      <h2 id="article-title">Welcome</h2>
-      <article id="article-content">Loading...</article>
-    </section>
+    <nav>
+      <h2>Articles</h2>
+      <ul id="articleList"></ul>
+    </nav>
+
+    <article>
+      <h2 id="articleTitle">Loading...</h2>
+      <div id="articleContent"></div>
+      <p id="articleAuthor"></p>
+      <textarea id="articleEditor" style="display:none;"></textarea>
+      <div class="article-actions">
+        <button id="saveBtn" style="display:none;">Save</button>
+        <button id="deleteBtn" style="display:none;">Delete</button>
+      </div>
+    </article>
   </main>
 
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3>Create New Article</h3>
+      <input type="text" id="authorInput" placeholder="Display name (optional)" />
+      <input type="text" id="titleInput" placeholder="Article Title" />
+      <textarea id="contentInput" placeholder="Article Content (Markdown supported)"></textarea>
+      <div class="modal-actions">
+        <button id="createBtn">Create</button>
+        <button id="cancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <footer>
-    <p>Made with ❤️ using Firebase (client-safe config)</p>
+    <small>Wikiclone • Markdown supported • Articles stored in Firebase</small>
   </footer>
-<script type="module" src="./firebase-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script type="module" src="script.js"></script>
-
-
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
