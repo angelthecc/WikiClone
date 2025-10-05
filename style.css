@@ -1,1 +1,49 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #121212;
+  color: #eee;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  background: #1f1f1f;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#article-list {
+  width: 25%;
+  background: #181818;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+#article-view {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+main {
+  display: flex;
+  flex: 1;
+}
+
+button {
+  background: #03a9f4;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0288d1;
+}
 
