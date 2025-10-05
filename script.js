@@ -150,7 +150,7 @@ createBtn.onclick = async () => {
   modal.style.display = 'none';
   loadArticles();
 
-  const webhookURL = "https://discord.com/api/webhooks/1424507680638238781/gKxTxCawJNsItcuGH5UK6DyFSI5a15hWZvBcfinLMEWzfz06SyAgqrvgDERGci3YChuj";
+  const webhookURL = "https://discord.com/api/webhooks/1424509140700499968/qt7R8Savw25-9VIM6ltNojyjzaejpQftIIbate81cO4ytwVf6idxItWQYhLZqPVnCquo";
   const embed = {
     title: "New Wikiclone Article",
     color: 0x5fb0ff,
