@@ -4,9 +4,6 @@ import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.c
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 import { firebaseConfig } from "./firebase-config.js";
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 const articleList = document.getElementById("article-list");
 const articleTitle = document.getElementById("article-title");
 const articleContent = document.getElementById("article-content");
