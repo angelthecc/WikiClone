@@ -5,7 +5,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyA9eLg5CJXzakMGEUfykW25Vay-pvcf2gQ",
   authDomain: "wikicloneangel.firebaseapp.com",
   projectId: "wikicloneangel",
-  storageBucket: "wikicloneangel.firebasestorage.app",
+  storageBucket: "wikicloneangel.appspot.com",
   messagingSenderId: "326980840327",
   appId: "1:326980840327:web:7b8cf54747be1adc1f8122",
   measurementId: "G-XQ7ZHJ4DLN"
@@ -34,23 +34,26 @@ const privacyLink = document.getElementById('privacyLink');
 const termsLink = document.getElementById('termsLink');
 
 let currentArticleId = null;
-let currentAuthor = null;
 
 async function loadArticles() {
-  const snapshot = await getDocs(collection(db, "articles"));
+  try {
+    const snapshot = await getDocs(collection(db, "articles"));
 
-  if(snapshot.empty){
-    await setDoc(doc(db, "articles", "Welcome"), {
-      title: "Welcome to Wikiclone",
-      content: "# Welcome to Wikiclone\n\nThis is the default article. It cannot be edited.\n\n## Markdown Tutorial\n- **Bold:** `**bold**`\n- *Italic:* `*italic*`\n- Headers: `# H1`, `## H2`\n- Links: `[Google](https://www.google.com)`\n- Lists: `- Item`\n\nCreate your own article with Markdown!",
-      author: "angelthec",
-      readOnly: true
-    });
-    return loadArticles();
+    if (snapshot.empty) {
+      await setDoc(doc(db, "articles", "Welcome"), {
+        title: "Welcome to Wikiclone",
+        content: "# Welcome to Wikiclone\n\nThis is the default article. It cannot be edited.\n\n## Markdown Tutorial\n- **Bold:** `**bold**`\n- *Italic:* `*italic*`\n- Headers: `# H1`, `## H2`\n- Links: `[Google](https://www.google.com)`\n- Lists: `- Item`\n\nCreate your own article with Markdown!",
+        author: "angelthec",
+        readOnly: true
+      });
+      return loadArticles();
+    }
+
+    const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    displayArticles(articles);
+  } catch (err) {
+    console.error("Error loading articles:", err);
   }
-
-  const articles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  displayArticles(articles);
 }
 
 function displayArticles(articleArray){
@@ -69,47 +72,59 @@ function displayArticles(articleArray){
 }
 
 async function showArticle(id){
-  const artDoc = await getDoc(doc(db, "articles", id));
-  if(!artDoc.exists()) return;
+  try {
+    const artDoc = await getDoc(doc(db, "articles", id));
+    if(!artDoc.exists()) return;
 
-  const art = artDoc.data();
-  currentArticleId = id;
-  currentAuthor = art.author;
+    const art = artDoc.data();
+    currentArticleId = id;
 
-  articleTitle.textContent = art.title;
-  articleContent.innerHTML = marked.parse(art.content);
-  articleAuthor.textContent = `Author: ${art.author}`;
+    articleTitle.textContent = art.title;
+    articleContent.innerHTML = marked.parse(art.content);
+    articleAuthor.textContent = `Author: ${art.author}`;
 
-  if(!art.readOnly && art.author === authorInput.value){
-    articleEditor.style.display='block';
-    saveBtn.style.display='inline-block';
-    deleteBtn.style.display='inline-block';
-    articleEditor.value = art.content;
-  } else {
-    articleEditor.style.display='none';
-    saveBtn.style.display='none';
-    deleteBtn.style.display='none';
+    if(!art.readOnly){
+      articleEditor.style.display='block';
+      saveBtn.style.display='inline-block';
+      deleteBtn.style.display='inline-block';
+      articleEditor.value = art.content;
+    } else {
+      articleEditor.style.display='none';
+      saveBtn.style.display='none';
+      deleteBtn.style.display='none';
+    }
+  } catch(err){
+    console.error("Error showing article:", err);
   }
 }
 
 saveBtn.onclick = async ()=>{
   if(!currentArticleId) return;
-  await updateDoc(doc(db, "articles", currentArticleId), { content: articleEditor.value });
-  showArticle(currentArticleId);
+  try {
+    await updateDoc(doc(db, "articles", currentArticleId), { content: articleEditor.value });
+    articleContent.innerHTML = marked.parse(articleEditor.value);
+  } catch(err){
+    console.error("Error saving article:", err);
+  }
 }
 
 deleteBtn.onclick = async ()=>{
   if(!currentArticleId) return;
-  await deleteDoc(doc(db, "articles", currentArticleId));
-  currentArticleId = null;
-  loadArticles();
+  if(!confirm("Are you sure you want to delete this article?")) return;
+  try {
+    await deleteDoc(doc(db, "articles", currentArticleId));
+    currentArticleId = null;
+    loadArticles();
+  } catch(err){
+    console.error("Error deleting article:", err);
+  }
 }
 
-newArticleBtn.onclick = ()=>{ 
-  authorInput.value=''; 
-  titleInput.value=''; 
-  contentInput.value=''; 
-  modal.style.display='flex'; 
+newArticleBtn.onclick = ()=>{
+  authorInput.value='';
+  titleInput.value='';
+  contentInput.value='';
+  modal.style.display='flex';
 }
 
 cancelBtn.onclick = ()=>{ modal.style.display='none'; }
@@ -123,15 +138,19 @@ createBtn.onclick = async ()=>{
     return;
   }
 
-  const docSnap = await getDoc(doc(db, "articles", title));
-  if(docSnap.exists()){
-    alert('Article already exists!');
-    return;
-  }
+  try {
+    const docSnap = await getDoc(doc(db, "articles", title));
+    if(docSnap.exists()){
+      alert('Article already exists!');
+      return;
+    }
 
-  await setDoc(doc(db, "articles", title), { title, author, content });
-  modal.style.display='none';
-  loadArticles();
+    await setDoc(doc(db, "articles", title), { title, author, content, readOnly:false });
+    modal.style.display='none';
+    loadArticles();
+  } catch(err){
+    console.error("Error creating article:", err);
+  }
 }
 
 privacyLink.onclick = ()=>{ alert("Privacy Policy:\nAll articles are stored online in Firebase."); }
