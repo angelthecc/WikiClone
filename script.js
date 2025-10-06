@@ -42,7 +42,7 @@ async function loadArticles() {
     if (snapshot.empty) {
       await setDoc(doc(db, "articles", "Welcome"), {
         title: "Hi There!",
-        content: "# We are currently Down! Please try again later!",
+        content: "# We are currently Down!\n # Please try again later!\n\n We are currently down to some issues. We will be back in under a week, just some Firebase Problems",
         author: "angelthec",
         readOnly: true
       });
