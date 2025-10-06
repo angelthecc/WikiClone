@@ -2,7 +2,7 @@
 
 [![Firebase](https://img.shields.io/badge/Firebase-Firestore-blue?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/) 
 [![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen?style=for-the-badge)]()
-[![Status](https://img.shields.io/badge/Status-UNActive-brightred?style=for-the-badge)]()
+[![Status](https://img.shields.io/badge/Status-UNActive-red?style=for-the-badge)]()
 
 Wikiclone is a simple wiki-like web application where users can create, view, and edit articles. Articles support **Markdown**, and a default article with a Markdown tutorial is included.
 
