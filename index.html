@@ -12,13 +12,18 @@
     <div class="header-links">
       <a href="#" id="privacyLink">Privacy Policy</a>
       <a href="#" id="termsLink">Terms of Use</a>
+      <button id="newArticleBtn">+ New Article</button>
     </div>
   </header>
 
   <main>
+    <nav>
+      <h2>Articles</h2>
+      <ul id="articleList"></ul>
+    </nav>
 
     <article>
-      <h2 id="articleTitle">We Are Currently Down!</h2>
+      <h2 id="articleTitle">Hi There! We are currently loading!</h2>
       <div id="articleContent"></div>
       <p id="articleAuthor"></p>
       <textarea id="articleEditor" style="display:none;"></textarea>
@@ -26,6 +31,17 @@
       <button id="deleteBtn" style="display:none;">Delete</button>
     </article>
   </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h3>Create New Article</h3>
+      <input type="text" id="authorInput" placeholder="Author Name">
+      <input type="text" id="titleInput" placeholder="Article Title">
+      <textarea id="contentInput" placeholder="Article Content (Markdown supported)"></textarea>
+      <button id="createBtn">Create</button>
+      <button id="cancelBtn">Cancel</button>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script type="module" src="script.js"></script>
