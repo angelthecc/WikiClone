@@ -41,8 +41,8 @@ async function loadArticles() {
 
     if (snapshot.empty) {
       await setDoc(doc(db, "articles", "Welcome"), {
-        title: "Hi There!",
-        content: "# We are currently Down!\n # Please try again later!\n\n We are currently down to some issues. We will be back in under a week, just some Firebase Problems",
+        title: "Welcome to Wikiclone",
+        content: "# Welcome to Wikiclone\n\nThis is the default article. It cannot be edited.\n\n## Markdown Tutorial\n- **Bold:** `**bold**`\n- *Italic:* `*italic*`\n- Headers: `# H1`, `## H2`\n- Links: `[Google](https://www.google.com)`\n- Lists: `- Item`\n\nCreate your own article with Markdown!",
         author: "angelthec",
         readOnly: true
       });
